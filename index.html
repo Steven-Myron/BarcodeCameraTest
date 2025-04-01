@@ -7,13 +7,26 @@
         <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.42/dist/dbr.js"></script>
     </head>
 <body>
+    <div id="barcodeScanner">
+        <span id='loading-status' style='font-size:x-large'>Loading Library...</span>
+    </div>
+    <div>
+        Barcode Result: <a id='result'>N/A</a>
+    </div>
     <script>
         Dynamsoft.DBR.BarcodeReader.license = "LICENSE-KEY";
         let scanner = null;
         (async()=>{
             scanner = await Dynamsoft.DBR.BarcodeScanner.createInstance();
-            scanner.onFrameRead = results => {console.log(results);};
+            scanner.onFrameRead = results => {
+                console.log(results);
+                for (let result of results) {
+                    document.getElementById('result').innerHTML = result.barcodeFormatString + ", " + result.barcodeText;
+                }
+            };
             scanner.onUnduplicatedRead = (txt, result) => {};
+            document.getElementById('barcodeScanner').appendChild(scanner.getUIElement());
+            document.getElementById('loading-status').hidden = true;
             await scanner.show();
         })();
     </script>
