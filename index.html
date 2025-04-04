@@ -5,8 +5,12 @@
         <meta name="viewport" content="width=device-width,initial-scale=1.0">
         <title>Dynamsoft JavaScript Barcode Scanner</title>
         <script src="https://cdn.jsdelivr.net/npm/dynamsoft-javascript-barcode@9.6.42/dist/dbr.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
     </head>
 <body>
+    <button id="start-button">Start</button>
+    <div id="interactive" class="viewport"></div>
+    
     <div id="barcodeScanner">
         <span id='loading-status' style='font-size:x-large'>Loading Library...</span>
     </div>
@@ -14,6 +18,29 @@
         Barcode Result: <a id='result'>N/A</a>
     </div>
     <script>
+        Quagga.init({
+            inputStream: {
+                name: "Live",
+                type: "LiveStream",
+                target: document.querySelector('#interactive')    // Or '#yourElement' (optional)
+            },
+            decoder: {
+                readers: ["code_128_reader", "code_39_reader"]
+            }
+        }, function(err) {
+            if (err) {
+                console.log(err);
+                return
+            }
+        });
+        Quagga.onDetected(function(result) {
+            var code = result.codeResult.code;
+
+            alert('Barcode detected and read! Value: ' + code);
+        });
+        document.getElementById('start-button').addEventListener('click', function() {
+            Quagga.start();
+        });
         Dynamsoft.DBR.BarcodeReader.license = "LICENSE-KEY";
         let scanner = null;
         (async()=>{
